@@ -5,7 +5,7 @@ from .views import FileViewSet
 
 
 router = routers.DefaultRouter()
-router.register(r'upload',
+router.register('upload',
                 FileViewSet,
                 basename='upload_file')
 
