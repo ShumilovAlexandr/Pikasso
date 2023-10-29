@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  db:
+    image: nouchka/sqlite3:latest
+    command:
+      - entrypoint.sh
+    volumes:
+      - ./service:/database.db
+
+  redis:
+    image: redis:7.0.5-alpine
+    hostname: redis
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./service:/data
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    build: .
+    command: "celery -A mytest worker -l info"
+    depends_on:
+      - app
+
+  flower:
+    build:
+      context: .
+    hostname: flower
+    ports:
+      - "5555:5555"
+    command: "celery -A mytest flower"
+    volumes:
+      - ./service:/data
+    depends_on:
+      - redis
+
+volumes:
+  service:

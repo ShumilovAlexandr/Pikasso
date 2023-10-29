@@ -12,7 +12,3 @@ router.register('upload',
 urlpatterns = [
     path('', include(router.urls)),
 ]
-
-# urlpatterns = [
-#     path('upload/', FileViewSet.as_view(), name="upload_file"),
-# ]

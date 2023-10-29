@@ -6,14 +6,11 @@ from celery import Celery
 
 app = Celery("mytest")
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mytest.settings")
-app.config_from_object("django.conf:settings", namespace="CELERY")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE",
+                      "mytest.settings")
+app.config_from_object("django.conf:settings",
+                       namespace="CELERY")
 
 app.autodiscover_tasks()
 
-
-@app.task()
-def debug_t():
-    time.sleep(4)
-    print("Hello!")
 

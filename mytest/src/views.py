@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 
 from .serializers import FileSerializer
 from .models import File
+from tasks import process_file
 
 
 class FileViewSet(viewsets.ModelViewSet):
@@ -14,7 +15,8 @@ class FileViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            self.perform_create(serializer)
+            file = serializer.save()
+            process_file.delay(file.id)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED,
@@ -22,5 +24,4 @@ class FileViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
-
 

@@ -4,11 +4,11 @@ RUN mkdir /pikasso
 
 WORKDIR /pikasso
 
-COPY requirements.txt .
+COPY mytest/requirements.txt .
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-COPY . .
+COPY mytest .
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
