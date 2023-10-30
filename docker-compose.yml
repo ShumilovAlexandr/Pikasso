@@ -1,12 +1,17 @@
 version: '3'
 
-services:
+volumes:
   db:
+
+services:
+  sqlite3:
     image: nouchka/sqlite3:latest
     command:
       - entrypoint.sh
+    stdin_open: true
+    tty: true
     volumes:
-      - ./service:/database.db
+      - db:/root/db
 
   redis:
     image: redis:7.0.5-alpine
@@ -17,10 +22,10 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./service:/data
+      - db:/root/db
     depends_on:
-      - db
       - redis
+      - db
 
   celery:
     build: .
@@ -36,9 +41,6 @@ services:
       - "5555:5555"
     command: "celery -A mytest flower"
     volumes:
-      - ./service:/data
+      - db:/root/db
     depends_on:
       - redis
-
-volumes:
-  service:
