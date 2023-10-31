@@ -1,9 +1,16 @@
 version: '3'
 
-volumes:
-  db:
-
 services:
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - db:/root/db
+    depends_on:
+      - sqlite3
+
   sqlite3:
     image: nouchka/sqlite3:latest
     command:
@@ -17,21 +24,13 @@ services:
     image: redis:7.0.5-alpine
     hostname: redis
 
-  app:
-    build: .
-    ports:
-      - "8000:8000"
-    volumes:
-      - db:/root/db
-    depends_on:
-      - redis
-      - db
-
   celery:
     build: .
-    command: "celery -A mytest worker -l info"
+    command: "celery -A celery_app.app worker --loglevel=info"
     depends_on:
       - app
+      - redis
+      - sqlite3
 
   flower:
     build:
@@ -39,8 +38,11 @@ services:
     hostname: flower
     ports:
       - "5555:5555"
-    command: "celery -A mytest flower"
+    command: "celery -A celery_app.app flower"
     volumes:
       - db:/root/db
     depends_on:
-      - redis
+      - celery
+
+volumes:
+  db:
