@@ -26,7 +26,7 @@ services:
 
   celery:
     build: .
-    command: "celery -A celery_app.app worker --loglevel=info"
+    command: "celery -A mytest.celery_app.app worker --loglevel=info"
     depends_on:
       - app
       - redis
@@ -38,7 +38,7 @@ services:
     hostname: flower
     ports:
       - "5555:5555"
-    command: "celery -A celery_app.app flower"
+    command: "celery -A mytest.celery_app.app flower"
     volumes:
       - db:/root/db
     depends_on:

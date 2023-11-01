@@ -1,14 +1,11 @@
-from django.urls import include, path
-from rest_framework import routers
+from django.urls import (path,
+                         include)
 
-from .views import FileViewSet
+from .views import (FileViewSet,
+                    FileListViewSet)
 
-
-router = routers.DefaultRouter()
-router.register('upload',
-                FileViewSet,
-                basename='upload_file')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('upload/', FileViewSet.as_view()),
+    path('files/', FileListViewSet.as_view())
 ]

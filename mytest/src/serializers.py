@@ -2,7 +2,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
 from .models import File
-from .tasks import process_file
+from .tasks import update_process_file
 
 
 class FileSerializer(ModelSerializer):
@@ -20,7 +20,13 @@ class FileSerializer(ModelSerializer):
         return obj.file.name.split(".")[-1]
 
     def create(self, validated_data):
-        # file = validated_data.pop('file')
-        # uploaded_at = validated_data.pop('uploaded_at')
-        # processed = process_file.delay()
-        pass
+        instance = super().create(validated_data)
+        update_process_file.delay(instance.id)
+        return instance
+
+
+class FileListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = File
+        fields = ["file", "uploaded_at", "processed"]
+

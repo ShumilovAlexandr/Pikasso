@@ -1,12 +1,17 @@
-from rest_framework import status, viewsets
-from rest_framework.response import Response
+from rest_framework.generics import (CreateAPIView,
+                                     ListAPIView)
 
-from .serializers import FileSerializer
+from .serializers import (FileSerializer,
+                          FileListSerializer)
 from .models import File
 
 
-class FileViewSet(viewsets.ModelViewSet):
+class FileViewSet(CreateAPIView):
     queryset = File.objects.all()
     serializer_class = FileSerializer
 
+
+class FileListViewSet(ListAPIView):
+    queryset = File.objects.all()
+    serializer_class = FileListSerializer
 
