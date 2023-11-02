@@ -21,6 +21,7 @@ class FileSerializer(ModelSerializer):
 
     def create(self, validated_data):
         instance = super().create(validated_data)
+        instance.save()
         update_process_file.delay(instance.id)
         return instance
 
@@ -28,5 +29,5 @@ class FileSerializer(ModelSerializer):
 class FileListSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
-        fields = ["file", "uploaded_at", "processed"]
+        fields = ["file", "uploaded_at", "processed", "id"]
 
