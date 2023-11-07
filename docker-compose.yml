@@ -1,48 +1,48 @@
-version: '3'
+version: '3.9'
 
 services:
 
-  app:
-    build: .
-    ports:
-      - "8000:8000"
+  db:
+    image: postgres:15
+    container_name: db
     volumes:
-      - db:/root/db
-    depends_on:
-      - sqlite3
+      - /.pg/data/db:/var/lib/postgresql/data
+    env_file:
+      - .env
 
-  sqlite3:
-    image: nouchka/sqlite3:latest
-    command:
-      - entrypoint.sh
-    stdin_open: true
-    tty: true
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    container_name: app
+    depends_on:
+      - db
     volumes:
-      - db:/root/db
+      - ./service:/service
+    env_file:
+      - .env
 
   redis:
     image: redis:7.0.5-alpine
+    container_name: redis
     hostname: redis
 
   celery:
+    container_name: celery
     build: .
     command: "celery -A mytest.celery_app.app worker --loglevel=info"
+    volumes:
+      - ./service:/service
     depends_on:
-      - app
       - redis
-      - sqlite3
 
   flower:
+    container_name: flower
     build:
       context: .
     hostname: flower
     ports:
       - "5555:5555"
     command: "celery -A mytest.celery_app.app flower"
-    volumes:
-      - db:/root/db
     depends_on:
-      - celery
-
-volumes:
-  db:
+      - redis
