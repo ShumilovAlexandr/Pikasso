@@ -3,7 +3,7 @@ import logging
 from celery import shared_task
 
 from src.models import File
-from mytest.celery_app import app
+from celery_app import app
 
 
 @shared_task()

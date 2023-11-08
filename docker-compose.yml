@@ -2,23 +2,28 @@ version: '3.9'
 
 services:
 
-  db:
-    image: postgres:15
-    container_name: db
-    volumes:
-      - /.pg/data/db:/var/lib/postgresql/data
-    env_file:
-      - .env
-
   app:
     build:
       dockerfile: Dockerfile
       context: .
     container_name: app
+    command: python manage.py runserver 0.0.0.0:8000
     depends_on:
       - db
+      - redis
+      - celery
     volumes:
       - ./service:/service
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+
+  db:
+    image: postgres:15
+    container_name: db
+    volumes:
+      - data:/var/lib/postgresql/data
     env_file:
       - .env
 
@@ -30,7 +35,7 @@ services:
   celery:
     container_name: celery
     build: .
-    command: "celery -A mytest.celery_app.app worker --loglevel=info"
+    command: "celery -A celery_app.app worker --loglevel=info"
     volumes:
       - ./service:/service
     depends_on:
@@ -43,6 +48,9 @@ services:
     hostname: flower
     ports:
       - "5555:5555"
-    command: "celery -A mytest.celery_app.app flower"
+    command: "celery -A celery_app.app flower"
     depends_on:
       - redis
+
+volumes:
+  data:

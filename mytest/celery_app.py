@@ -9,7 +9,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE",
 
 app = Celery("mytest")
 
-app.config_from_object("django.conf:settings", namespace="CELERY")
+app.config_from_object("django.conf:settings")
 app.conf.broker_url = settings.CELERY_BROKER_URL
 
 app.autodiscover_tasks()
